@@ -5,35 +5,20 @@ import fragmentShader from "../shaders/phongShader/fragment.glsl?raw";
 
 export class PhongMaterial extends Material {
 
-    /** 
-     * Creates an instance of PhongMaterial. 
-     * @param {vec3f} color The material color
-     * @param {Texture} colorMap The texture object of the material
-     * @param {vec3f} specular The material specular coefficient
-     * @param {float} intensity The light intensity
-     * @memberof PhongMaterial
-     */
-    constructor(color, colorMap, specular, intensity) {
-        let textureSample = 0;
+    constructor(color, specular, light, translate, scale) {
+        let lightMVP;
+        //lightMVP = light.CalcLightMVP(translate, scale);
+        let lightIntensity = light.mat.GetIntensity();
 
-        if (colorMap != null) {
-            textureSample = 1;
+        super({
+            // Phong
+            'uSampler': { type: 'texture', value: color },
+            'uKs': { type: '3fv', value: specular },
+            'uLightIntensity': { type: '3fv', value: lightIntensity },
+            // Shadow
+            'uShadowMap': { type: 'texture', value: light.fbo },
+            'uLightMVP': { type: 'matrix4fv', value: lightMVP },
 
-            super({
-                'uSampler': { type: 'texture', value: colorMap },
-                'uTextureSample': { type: '1i', value: textureSample },
-                'uKd': { type: '3fv', value: color },
-                'uKs': { type: '3fv', value: specular },
-                'uLightIntensity': { type: '1f', value: intensity }
-            }, [], vertexShader, fragmentShader);
-        }
-        else {
-            super({
-                'uTextureSample': { type: '1i', value: textureSample },
-                'uKd': { type: '3fv', value: color },
-                'uKs': { type: '3fv', value: specular },
-                'uLightIntensity': { type: '1f', value: intensity }
-            }, [], vertexShader, fragmentShader);
-        }
+        }, [], vertexShader, fragmentShader);
     }
 };

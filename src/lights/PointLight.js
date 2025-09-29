@@ -1,5 +1,6 @@
 import { EmissiveMaterial } from './Light';
 import { Mesh } from '../objects/Mesh';
+import { FBO } from '../textures/FBO';
 
 export class PointLight {
     /**
@@ -8,8 +9,14 @@ export class PointLight {
      * @param {vec3f} lightColor The color of the PointLight.
      * @memberof PointLight
      */
-    constructor(lightIntensity, lightColor) {
+    constructor(lightIntensity, lightColor, hasShadowMap, gl) {
         this.mesh = Mesh.cube();
         this.mat = new EmissiveMaterial(lightIntensity, lightColor);
+
+        this.hasShadowMap = hasShadowMap;
+        this.fbo = new FBO(gl);
+        if (!this.fbo) {
+            console.error('Can not create FBO for PointLight');
+        }
     }
 }

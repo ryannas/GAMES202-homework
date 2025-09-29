@@ -10,6 +10,7 @@ export class TRSTransform {
 
 export class WebGLRenderer {
     meshes = [];
+    shadowMeshes = [];
     lights = [];
 
     constructor(gl, camera) {
@@ -21,7 +22,9 @@ export class WebGLRenderer {
 
     addMesh(mesh) { this.meshes.push(mesh); }
 
-    render(guiParams) {
+    addShadowMesh(mesh) { this.shadowMeshes.push(mesh); }
+
+    render() {
         const gl = this.gl;
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
@@ -32,26 +35,29 @@ export class WebGLRenderer {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         // Handle light
-        const timer = Date.now() * 0.00025;
-        let lightPos = [ Math.sin(timer * 6) * 100, 
-                         Math.cos(timer * 4) * 150, 
-                         Math.cos(timer * 2) * 100 ];
+        // const timer = Date.now() * 0.00025;
+        // let lightPos = [ Math.sin(timer * 6) * 100, 
+        //                  Math.cos(timer * 4) * 150, 
+        //                  Math.cos(timer * 2) * 100 ];
 
         if (this.lights.length != 0) {
             for (let l = 0; l < this.lights.length; l++) {
-                let trans = new TRSTransform(lightPos);
-                this.lights[l].meshRender.draw(this.camera, trans);
+                // draw light
+                this.lights[l].meshRender.mesh.transform.translate = this.lights[l].entity.lightPos;
+                this.lights[l].meshRender.draw(this.camera);
 
+                // shadow pass
+                if (this.lights[l].entity.hasShadowMap) {
+                    for (let i = 0; i < this.shadowMeshes.length; i++) {
+                        this.shadowMeshes[i].draw(this.camera);
+                    }
+                }
+
+                // camera pass
                 for (let i = 0; i < this.meshes.length; i++) {
-                    const mesh = this.meshes[i];
-
-                    const modelTranslation = [guiParams.modelTransX, guiParams.modelTransY, guiParams.modelTransZ];
-                    const modelScale = [guiParams.modelScaleX, guiParams.modelScaleY, guiParams.modelScaleZ];
-                    let meshTrans = new TRSTransform(modelTranslation, modelScale);
-                    
-                    this.gl.useProgram(mesh.shader.program.glShaderProgram);
-                    this.gl.uniform3fv(mesh.shader.program.uniforms.uLightPos, lightPos);
-                    mesh.draw(this.camera, meshTrans);
+                    this.gl.useProgram(this.meshes[i].shader.program.glShaderProgram);
+                    this.gl.uniform3fv(this.meshes[i].shader.program.uniforms.uLightPos, this.lights[l].entity.lightPos);
+                    this.meshes[i].draw(this.camera);
                 }
             }
         } else {

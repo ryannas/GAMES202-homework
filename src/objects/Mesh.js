@@ -1,10 +1,25 @@
+import { TRSTransform } from '../utils/Tools';
+
 export class Mesh {
-	constructor(verticesAttrib, normalsAttrib, texcoordsAttrib, indices) {
+	constructor(verticesAttrib, normalsAttrib, texcoordsAttrib, indices, transform) {
 		this.indices = indices;
 		this.count = indices.length;
 		this.hasVertices = false;
 		this.hasNormals = false;
 		this.hasTexcoords = false;
+
+		if (transform != null)
+		{
+			const modelTranslation = [transform.modelTransX, transform.modelTransY, transform.modelTransZ];
+			const modelScale = [transform.modelScaleX, transform.modelScaleY, transform.modelScaleZ];
+			let meshTrans = new TRSTransform(modelTranslation, modelScale);
+			this.transform = meshTrans;
+		}
+		else
+		{
+			this.transform = new TRSTransform();
+		}
+
 		let extraAttribs = [];
 
 		if (verticesAttrib != null) {
@@ -70,6 +85,6 @@ export class Mesh {
 			16, 17, 18, 16, 18, 19,   // right
 			20, 21, 22, 20, 22, 23,   // left
 		];
-		return new Mesh({ name: 'aVertexPosition', array: new Float32Array(positions) }, null, null, indices);
+		return new Mesh({ name: 'aVertexPosition', array: new Float32Array(positions) }, null, null, indices, null);
 	}
 }

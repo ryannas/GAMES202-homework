@@ -3,12 +3,16 @@ import MTLLoader from 'three-mtl-loader';
 
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { Mesh } from '../objects/Mesh';
+
 import { PhongMaterial } from '../materials/PhongMaterial';
-import { LightVertexShader as VertexShader, FragmentShader } from '../shaders/InternalShader';
+import { ShadowMaterial } from '../materials/ShadowMaterial';
+
 import { MeshRender } from '../renderers/MeshRender';
 import { Texture } from '../textures/Texture';
 
-export function loadOBJ(renderer, path, name) {
+import { mat4 } from 'gl-matrix';
+
+export function loadOBJ(renderer, path, name, materialName, transform) {
 
 	const manager = new THREE.LoadingManager();
 	manager.onProgress = function (item, loaded, total) {
@@ -45,16 +49,32 @@ export function loadOBJ(renderer, path, name) {
 							let mesh = new Mesh({ name: 'aVertexPosition', array: geo.attributes.position.array },
 								{ name: 'aNormalPosition', array: geo.attributes.normal.array },
 								{ name: 'aTextureCoord', array: geo.attributes.uv.array },
-								indices);
+								indices, transform);
 
 							let colorMap = null;
 							if (mat.map != null) colorMap = new Texture(renderer.gl, mat.map.image);
 							// MARK: You can change the myMaterial object to your own Material instance
 
-							let myMaterial = new PhongMaterial(mat.color.toArray(), colorMap, mat.specular.toArray(), renderer.lights[0].entity.mat.intensity);
+							let material, shadowMaterial;
+							let translation = [transform.modelTransX, transform.modelTransY, transform.modelTransZ];
+							let scale = [transform.modelScaleX, transform.modelScaleY, transform.modelScaleZ];
+
+							let light = renderer.lights[0].entity;
+
+							console.log(colorMap)
+
+							switch (materialName) {
+								case 'phong':
+									material = new PhongMaterial(colorMap, mat.specular.toArray(), light, translation, scale);
+									shadowMaterial = new ShadowMaterial(light, translation, scale);
+									break;
+							}
 							
-							let meshRender = new MeshRender(renderer.gl, mesh, myMaterial);
+							let meshRender = new MeshRender(renderer.gl, mesh, material);
 							renderer.addMesh(meshRender);
+
+							let shadowMeshRender = new MeshRender(renderer.gl, mesh, shadowMaterial);
+							renderer.addShadowMesh(shadowMeshRender);
 						}
 					});
 				}, onProgress, onError);

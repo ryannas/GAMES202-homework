@@ -12,4 +12,8 @@ export class EmissiveMaterial extends Material {
         this.intensity = lightIntensity;
         this.color = lightColor;
     }
+
+    GetIntensity() {
+        return [this.intensity * this.color[0], this.intensity * this.color[1], this.intensity * this.color[2]]
+    }
 }
