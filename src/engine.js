@@ -10,7 +10,7 @@ import { DirectionalLight } from './lights/DirectionalLight'
 
 import { setTransform } from './utils/Tools';
 
-var cameraPosition = [-10, 10, 10];
+var cameraPosition = [80, 80, 80];
 
 GAMES202Main();
 
@@ -50,14 +50,14 @@ function GAMES202Main() {
 	// const pointLight = new PointLight(250, [1, 1, 1], false, gl);
 	// renderer.addLight(pointLight);
 	
-	let lightPos = [0, 100, 0];
+	let lightPos = [0, 80, 80];
 	let focalPoint = [0, 0, 0];
-	let lightUp = [0, 0, 1]
-	const directionLight = new DirectionalLight(5000, [1, 1, 1], lightPos, focalPoint, lightUp, false, renderer.gl);
+	let lightUp = [0, 1, 0]
+	const directionLight = new DirectionalLight(5000, [1, 1, 1], lightPos, focalPoint, lightUp, true, renderer.gl);
 	renderer.addLight(directionLight);
 
 	// add shapes
-	let floorTransform = setTransform(0, 0, -20, 10, 10, 10);
+	let floorTransform = setTransform(0, 0, -20, 5, 5, 5);
 	let obj1Transform = setTransform(0, 0, 0, 20, 20, 20);
 	let obj2Transform = setTransform(40, 0, -40, 10, 10, 10);
 

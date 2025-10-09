@@ -1,5 +1,7 @@
 import { mat4 } from 'gl-matrix';
 
+var resolution = 2048;
+
 export class MeshRender {
 
 	#vertexBuffer;
@@ -146,7 +148,6 @@ export class MeshRender {
 
 		let textureNum = 0;
 		for (let k in this.material.uniforms) {
-			if (this.material.uniforms[k].value == null) continue;
 
 			if (this.material.uniforms[k].type == 'matrix4fv') {
 				gl.uniformMatrix4fv(
@@ -203,5 +204,7 @@ export class MeshRender {
 			const offset = 0;
 			gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
 		}
+
+		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 	}
 }

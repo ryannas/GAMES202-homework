@@ -51,17 +51,19 @@ export function loadOBJ(renderer, path, name, materialName, transform) {
 								{ name: 'aTextureCoord', array: geo.attributes.uv.array },
 								indices, transform);
 
-							let colorMap = null;
-							if (mat.map != null) colorMap = new Texture(renderer.gl, mat.map.image);
-							// MARK: You can change the myMaterial object to your own Material instance
+							let colorMap = new Texture();
+							if (mat.map != null) {
+								colorMap.CreateImageTexture(renderer.gl, mat.map.image);
+							}
+							else {
+								colorMap.CreateConstantTexture(renderer.gl, mat.color.toArray());
+							}
 
 							let material, shadowMaterial;
 							let translation = [transform.modelTransX, transform.modelTransY, transform.modelTransZ];
 							let scale = [transform.modelScaleX, transform.modelScaleY, transform.modelScaleZ];
 
 							let light = renderer.lights[0].entity;
-
-							console.log(colorMap)
 
 							switch (materialName) {
 								case 'phong':

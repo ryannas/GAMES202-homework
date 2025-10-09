@@ -46,7 +46,7 @@ export class WebGLRenderer {
                 this.lights[l].meshRender.mesh.transform.translate = this.lights[l].entity.lightPos;
                 this.lights[l].meshRender.draw(this.camera);
 
-                // shadow pass
+                // shadow pass (calc shadow map for each light)
                 if (this.lights[l].entity.hasShadowMap) {
                     for (let i = 0; i < this.shadowMeshes.length; i++) {
                         this.shadowMeshes[i].draw(this.camera);

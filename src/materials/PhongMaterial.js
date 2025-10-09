@@ -6,8 +6,7 @@ import fragmentShader from "../shaders/phongShader/fragment.glsl?raw";
 export class PhongMaterial extends Material {
 
     constructor(color, specular, light, translate, scale) {
-        let lightMVP;
-        //lightMVP = light.CalcLightMVP(translate, scale);
+        let lightMVP = light.CalcLightMVP(translate, scale);
         let lightIntensity = light.mat.GetIntensity();
 
         super({

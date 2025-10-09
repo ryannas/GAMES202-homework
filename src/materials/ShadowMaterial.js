@@ -6,8 +6,7 @@ import fragmentShader from "../shaders/shadowShader/fragment.glsl?raw";
 export class ShadowMaterial extends Material {
 
     constructor(light, translate, scale) {
-        let lightMVP;
-        //lightMVP = light.CalcLightMVP(translate, scale);
+        let lightMVP = light.CalcLightMVP(translate, scale);
 
         super({
             'uLightMVP': { type: 'matrix4fv', value: lightMVP }

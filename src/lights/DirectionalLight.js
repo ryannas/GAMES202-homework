@@ -4,6 +4,8 @@ import { FBO } from '../textures/FBO';
 
 import { setTransform } from '../utils/Tools';
 
+import { mat4 } from 'gl-matrix';
+
 export class DirectionalLight {
     /**
      * Creates an instance of PointLight.
@@ -33,10 +35,15 @@ export class DirectionalLight {
         let projectionMatrix = mat4.create();
 
         // Model transform
+        mat4.identity(modelMatrix);
+        mat4.translate(modelMatrix, modelMatrix, translate);
+        mat4.scale(modelMatrix, modelMatrix, scale);
 
         // View transform
+        mat4.lookAt(viewMatrix, this.lightPos, this.focalPoint, this.lightUp);
     
         // Projection transform
+        mat4.ortho(projectionMatrix, -100, 100, -100, 100, 1e-2, 500);
 
         mat4.multiply(lightMVP, projectionMatrix, viewMatrix);
         mat4.multiply(lightMVP, lightMVP, modelMatrix);
